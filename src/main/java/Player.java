@@ -7,10 +7,10 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Player extends Thread{
-    GameManager gameManager;
     Network network;
     char side;
 
+    GameState gameState;
     boolean gameStarted;
     boolean waitingForOtherPlayer;
 
@@ -29,7 +29,6 @@ public class Player extends Thread{
 
     void execute(){
         System.out.println("Side: " + side);
-        gameManager = new GameManager();
 
         while(true){
             //System.out.println(".");
@@ -62,9 +61,8 @@ public class Player extends Thread{
                 System.out.println("its my turn");
                 waitingForOtherPlayer = false;
 
-
-                gameManager.initialize(FEN);
-                gameManager.printBoard();
+                GameManager.generateBoard(FEN);
+                GameManager.printBoard(0);
 
                 // calculate and execute move
                 Move move = calculateMoves();
@@ -92,8 +90,7 @@ public class Player extends Thread{
                 if(!bothConnected_confirm){
                     System.out.println("invalid move");
                     System.out.println("game lost :(");
-
-                    Debug.invalidMove(gameManager.FEN, move.figure);
+                    Debug.invalidMove(gameState.FEN, move.figure);
 
                     break;
                 }
@@ -126,7 +123,7 @@ public class Player extends Thread{
         randomFigure.calculatePossibleMoves();
 
         if(randomFigure.possibleMoves.isEmpty())
-            Debug.noMoves(gameManager.FEN, randomFigure);
+            Debug.noMoves(gameState.FEN, randomFigure);
         int randomMoveIndex = random.nextInt(randomFigure.possibleMoves.size());
         Move randomMove = randomFigure.possibleMoves.get(randomMoveIndex);
 
@@ -140,7 +137,7 @@ public class Player extends Thread{
 
     ArrayList<Figure> getFigures(){
         ArrayList<Figure> result = new ArrayList<>();
-        for(Figure figure : gameManager.figures) {
+        for(Figure figure : GameManager.figures) {
             if (figure.side == side & figure.canMove())
                 result.add(figure);
         }

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Field {
     Coordinate coordinate;
     public Coordinate getCoordinate(){ return coordinate; }
@@ -14,17 +16,17 @@ public class Field {
     }
 
     public boolean isEmpty(){
-        return (figure != null) & (topFigure != null);
+        return (figure == null) & (topFigure == null);
     }
-    public void initializeFigures(Figure... figures){
-        if(figures[0] != null)
-            this.figure = figures[0];
-        if(figures[1] != null)
-            this.topFigure = figures[1];
-    }
-
-    public boolean figureAllowed(Figure figure){
-        return true;
+    public void initializeFigures(ArrayList<Figure> figures){
+        if(figures.isEmpty())
+            this.figure = null;
+        else
+            this.figure = figures.get(0);
+        if(figures.size() < 2)
+            this.topFigure = null;
+        else
+            this.topFigure = figures.get(1);
     }
 
     public String toString(){

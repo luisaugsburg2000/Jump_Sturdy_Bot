@@ -1,19 +1,15 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 
 public class Figure {
-    public char side;
-    public Field field;
-    public ArrayList<Move> possibleMoves = new ArrayList<>();
+    char side;
+    Field field;
+    ArrayList<Move> possibleMoves = new ArrayList<>();
 
-    public Figure(String side, Field field){
-        this.side = side.charAt(0);
-        this.field = field;
-        GameManager.instance.figures.add(this);
-    }
-    public Figure(char side, Field field){
+    public Figure(char side, Field field) {
         this.side = side;
         this.field = field;
-        GameManager.instance.figures.add(this);
     }
 
     boolean canMove(){
@@ -27,20 +23,19 @@ public class Figure {
         return Character.toString(side);
     }
 
-    public void calculatePossibleMoves(){
+    void calculatePossibleMoves(){
         possibleMoves.clear();
 
         if(canMove()){
-            // walk
             if(!isOnTop()) {
+                // walk
                 walkForward();
                 walkLeft();
                 walkRight();
+                // beat
+                beatLeftFwd();
+                beatRightFwd();
             }
-
-            // beat
-            beatLeftFwd();
-            beatRightFwd();
 
             // jump
             if(isOnTop()){
@@ -58,16 +53,18 @@ public class Figure {
         }
     }
 
-    void checkCoordinates(Coordinate coordinate, Move.MoveType moveType){
+    private void checkCoordinates(Coordinate coordinate, Move.MoveType moveType){
         if(coordinate.isValid()){
-            Field newField = GameManager.instance.getField(coordinate);
+            Field newField = GameManager.getField(coordinate);
             Move move = new Move(this, field, newField, moveType);
             if(move.isAllowed())
                 possibleMoves.add(move);
+
+            //String move_ = Coord
         }
     }
 
-    void walkForward(){
+    private void walkForward(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b')
             newCoordinate.y += 1;
@@ -75,7 +72,7 @@ public class Figure {
             newCoordinate.y -= 1;
         checkCoordinates(newCoordinate, Move.MoveType.Walk);
     }
-    void walkLeft(){
+    private void walkLeft(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b')
             newCoordinate.x -= 1;
@@ -83,7 +80,7 @@ public class Figure {
             newCoordinate.x += 1;
         checkCoordinates(newCoordinate, Move.MoveType.Walk);
     }
-    void walkRight(){
+    private void walkRight(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b')
             newCoordinate.x += 1;
@@ -91,7 +88,7 @@ public class Figure {
             newCoordinate.x -= 1;
         checkCoordinates(newCoordinate, Move.MoveType.Walk);
     }
-    void beatLeftFwd(){
+    private void beatLeftFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x -= 1;
@@ -103,7 +100,7 @@ public class Figure {
         }
         checkCoordinates(newCoordinate, Move.MoveType.Beat);
     }
-    void beatRightFwd(){
+    private void beatRightFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x += 1;
@@ -115,7 +112,7 @@ public class Figure {
         }
         checkCoordinates(newCoordinate, Move.MoveType.Beat);
     }
-    void jumpLeft(){
+    private void jumpLeft(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x -= 2;
@@ -127,7 +124,7 @@ public class Figure {
         }
         checkCoordinates(newCoordinate, Move.MoveType.Jump);
     }
-    void jumpLeftFwd(){
+    private void jumpLeftFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x -= 1;
@@ -139,7 +136,7 @@ public class Figure {
         }
         checkCoordinates(newCoordinate, Move.MoveType.Jump);
     }
-    void jumpRight(){
+    private void jumpRight(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x += 2;
@@ -151,7 +148,7 @@ public class Figure {
         }
         checkCoordinates(newCoordinate, Move.MoveType.Jump);
     }
-    void jumpRightFwd(){
+    private void jumpRightFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
         if(side == 'b'){
             newCoordinate.x += 1;

@@ -1,101 +1,116 @@
 import java.util.ArrayList;
 
 public class GameManager{
-    public static GameManager instance;
+    static boolean initilaized;
+    static Field[][] board = new Field[8][8];
+    static ArrayList<Figure> figures = new ArrayList<>();
 
-    public String FEN = "1b0b02b0/1b01bbb0b02/2b04bb/8/2b03r01/1r02r01r01/3rr1r0r01/r0r0rr3 r";
-    public Field[][] board;
-    public Player bluePlayer;
-    public Player redPlayer;
-    public ArrayList<Figure> figures = new ArrayList<>();
-
-    public GameManager(){
-        instance = this;
-    }
-    public void initialize(String FEN){
-        this.FEN = FEN;
-        figures.clear();
-        generateBoard();
-    }
-
-    public static void main(String[] args){
-        System.out.println();
-        System.out.println("START");
-        System.out.println();
-        GameManager gameManager = new GameManager();
-
-        gameManager.generateBoard();
-        gameManager.printBoard();
-        System.out.println();
-
-//        Figure figure1 = gameManager.getFigure(new Coordinate("F7"));
-//        //System.out.println(figure1.field);
-//        figure1.calculatePossibleMoves();
-//        figure1.printPossibleMoves();
-//        figure1.possibleMoves.get(1).execute();
-//        System.out.println();
-//        gameManager.printBoard();
-    }
-
-    void generateBoard(){
-        Field[][] result = new Field[8][8];
-
-        // initialize result board
+    private static void initialize(){
         for(int y = 0; y < 8; y++){
             for(int x = 0; x < 8; x++){
                 boolean locked = false;
                 if((y == 0 & (x == 0 | x == 7)) | (y == 7 & (x == 0 | x == 7)))
                     locked = true;
-                result[y][x] = new Field(x, y, locked);
+                board[y][x] = new Field(x, y, locked);
             }
         }
-        
-        //String nextPlayer = FEN.substring(FEN.length() - 1);
-        String boardString = FEN.substring(0, FEN.length() - 2);
+        initilaized = true;
+    }
 
+    static void generateBoard(String FEN){
+        if(!initilaized)
+            initialize();
+
+        // reset fields
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                board[y][x].initializeFigures(new ArrayList<>());
+            }
+        }
+        // reset figures
+        figures.clear();
+
+        // place figures
+        String boardString = FEN.split(" ")[0];
         String[] rows = boardString.split("/");
+        //int figureCount = 0;
         for(int y = 0; y < 8; y++){
             String row = rows[y];
 
             int x = 0;
-            Field currentField = result[y][x];
+            Field currentField = board[y][x];
             if(currentField.isLocked())
                 x += 1;
 
-            Figure[] figures = new Figure[2];
-            int figureCounter = 0;
+            ArrayList<Figure> newFigures = new ArrayList<>();
             for(int c = 0; c < row.length(); c++){
-                currentField = result[y][x];
-                String character = row.substring(c, c + 1);
+                currentField = board[y][x];
+                char character = row.substring(c, c + 1).charAt(0);
                 try {
-                    int num = Integer.parseInt(character);
-                    currentField.initializeFigures(figures);
-                    figures = new Figure[2];
-                    figureCounter = 0;
+                    int num = Integer.parseInt(String.valueOf(character));
+                    currentField.initializeFigures(newFigures);
+                    newFigures.clear();
                     x += Math.max(num, 1);
                 } catch (NumberFormatException e) {
-                    figures[figureCounter] = new Figure(character, result[y][x]);
-                    figureCounter++;
-                    if(figureCounter == 2){
-                        currentField.initializeFigures(figures);
-                        figures = new Figure[2];
-                        figureCounter = 0;
+//                    Figure newFigure = figures.get(figureCount);
+//                    figureCount++;
+//                    newFigure.initialize(character, currentField);
+                    newFigures.add(new Figure(character, currentField));
+                    if(newFigures.size() == 2){
+                        currentField.initializeFigures(newFigures);
+                        newFigures.clear();
                         x++;
                     }
                 }
             }
         }
-
-        board = result;
     }
 
-    void printBoard(){
+    static String generateFEN(){
+        StringBuilder result = new StringBuilder();
+        int emptyFieldCount = 0;
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                Field currentField = board[y][x];
+                if(currentField.isLocked())
+                    continue;
+                if(currentField.isEmpty())
+                    emptyFieldCount++;
+                else{
+                    if(emptyFieldCount > 0)
+                        result.append(emptyFieldCount);
+                    emptyFieldCount = 0;
+                    if(currentField.figure != null)
+                        result.append(currentField.figure.side);
+                    if(currentField.topFigure != null)
+                        result.append(currentField.topFigure.side);
+                    else
+                        result.append("0");
+                }
+            }
+            if(emptyFieldCount > 0)
+                result.append(emptyFieldCount);
+            emptyFieldCount = 0;
+            if(y < 7)
+                result.append("/");
+        }
+
+        return result.toString();
+    }
+
+    static void printBoard(){ printBoard(0); }
+    static void printBoard(int indent){
         String RESET = "\033[0m";
         String RED = "\033[0;31m";
         String BLUE = "\033[0;34m";
 
+        String indentString = "          ";
+        String totalIndent = "";
+        for(int i = 0; i < indent; i++)
+            totalIndent += indentString;
+
         for(int y = 7; y >= 0; y--){
-            String row = (y + 1) + " |";
+            String row = totalIndent + (y + 1) + " |";
             
             for(int x = 0; x < 8; x++){
                 if(board[y][x].isLocked())
@@ -125,18 +140,25 @@ public class GameManager{
                     row += RESET;
                 }
 
-                if(x != 7)
-                    row += "|";
+                row += "|";
             }
             System.out.println(row);
         }
-        System.out.println("  |A |B |C |D |E |F |G |H ");
+        System.out.println(totalIndent + "   A  B  C  D  E  F  G  H  ");
     }
 
-    Field getField(Coordinate coordinate){
+    static void print(String s, int indent){
+        String indentString = "          ";
+        String totalIndent = "";
+        for(int i = 0; i < indent; i++)
+            totalIndent += indentString;
+        System.out.println(totalIndent + s);
+    }
+
+    static Field getField(Coordinate coordinate){
         return board[coordinate.y][coordinate.x];
     }
-    Figure getFigure(Coordinate coordinate){
+    private static Figure getFigure(Coordinate coordinate){
         Field field = getField(coordinate);
         if(field.topFigure != null)
             return field.topFigure;
