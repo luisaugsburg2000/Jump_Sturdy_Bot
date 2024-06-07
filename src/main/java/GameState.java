@@ -8,19 +8,30 @@ public class GameState {
 
     int evaluation;
     boolean gameFinished;
+    char winner;
     ArrayList<Move> possibleMoves = new ArrayList<>();
 
     Move topMove;
     GameState nextGameState;
 
-    public GameState(char player, boolean isMax) {
+    TranspositionInfo transpositionInfo;
+    public class TranspositionInfo {
+        int viewDepth;
+        int depthEvaluation;
+    }
+
+    public GameState(char player, boolean isMax, int viewDepth) {
         this.FEN = GameManager.generateFEN();
         this.player = player;
         this.isMax = isMax;
-        evaluation = evaluate();
+        this.transpositionInfo = new TranspositionInfo();
+        this.transpositionInfo.viewDepth = viewDepth;
+        evaluation = initialize();
+//        if(Transposition.table.containsKey(this.FEN))
+//            System.out.println("TRANS");
     }
 
-    private int evaluate(){
+    private int initialize(){
         int ownFigures = 0;
         int oppFigures = 0;
         int gameEndEvaluation = 0;
@@ -40,10 +51,16 @@ public class GameState {
                     else if(currentField.figure.side != 0)
                         oppFigures++;
 
-                    if(y == 0 & currentField.figure.side == 'r')
+                    if(y == 0 & currentField.figure.side == 'r'){
+                        gameFinished = true;
+                        winner = 'r';
                         gameEndEvaluation = (player == 'r') ? 100 : -100;
-                    if(y == 7 & currentField.figure.side == 'b')
+                    }
+                    if(y == 7 & currentField.figure.side == 'b'){
+                        gameFinished = true;
+                        winner = 'b';
                         gameEndEvaluation = (player == 'b') ? 100 : -100;
+                    }
                 }
                 if(currentField.topFigure != null){
                     if(currentField.topFigure.side == player){
@@ -54,10 +71,16 @@ public class GameState {
                     else if(currentField.topFigure.side != 0)
                         oppFigures++;
 
-                    if(y == 0 & currentField.topFigure.side == 'r')
+                    if(y == 0 & currentField.topFigure.side == 'r'){
+                        gameFinished = true;
+                        winner = 'r';
                         gameEndEvaluation = (player == 'r') ? 100 : -100;
-                    if(y == 7 & currentField.topFigure.side == 'b')
+                    }
+                    if(y == 7 & currentField.topFigure.side == 'b'){
+                        gameFinished = true;
+                        winner = 'b';
                         gameEndEvaluation = (player == 'b') ? 100 : -100;
+                    }
                 }
             }
         }
@@ -82,6 +105,11 @@ public class GameState {
             return (ownFigures - oppFigures) + gameEndEvaluation;
         else
             return -((ownFigures - oppFigures) + gameEndEvaluation);
+    }
+
+    int evaluate(){
+        Testing.zustaende++;
+        return evaluation;
     }
 
     void printPossibleMoves(){

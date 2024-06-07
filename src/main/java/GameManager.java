@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class GameManager{
     static boolean initilaized;
     static Field[][] board = new Field[8][8];
-    static ArrayList<Figure> figures = new ArrayList<>();
+    //static ArrayList<Figure> figures = new ArrayList<>();
 
     private static void initialize(){
         for(int y = 0; y < 8; y++){
@@ -28,7 +28,7 @@ public class GameManager{
             }
         }
         // reset figures
-        figures.clear();
+        //figures.clear();
 
         // place figures
         String boardString = FEN.split(" ")[0];
@@ -67,6 +67,8 @@ public class GameManager{
     }
 
     static String generateFEN(){
+        if(board[0][0] == null)
+            System.out.println("Board not initialized");
         StringBuilder result = new StringBuilder();
         int emptyFieldCount = 0;
         for(int y = 0; y < 8; y++){

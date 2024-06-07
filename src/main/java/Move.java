@@ -50,10 +50,65 @@ public class Move {
 
     public void execute(){
         // remove from old field
-        if(origin.figure == figure)
-            origin.figure = null;
-        else if(origin.topFigure == figure)
+//        if(origin.figure == figure)
+//            origin.figure = null;
+//        else if(origin.topFigure == figure)
+//            origin.topFigure = null;
+        if(origin.topFigure != null)
             origin.topFigure = null;
+        else if (origin.figure != null)
+            origin.figure = null;
+
+        // update figure
+        figure.field = target;
+
+        // place on new field
+        if(moveType == MoveType.Walk){
+            if(target.figure != null)
+                target.topFigure = figure;
+            else
+                target.figure = figure;
+        }
+        if(moveType == MoveType.Beat){
+            if(target.topFigure != null){
+                destroyedFigure = target.topFigure;
+                target.topFigure = figure;
+            }
+            else if(target.figure != null){
+                destroyedFigure = target.figure;
+                target.figure = figure;
+            }
+        }
+        if(moveType == MoveType.Jump){
+            if(target.topFigure != null){
+                destroyedFigure = target.topFigure;
+                target.topFigure = figure;
+            }
+            else if(target.figure != null)
+                target.topFigure = figure;
+            else
+                target.figure = figure;
+        }
+
+        executed = true;
+    }
+    public void execute(boolean p){
+        System.out.println("FIG: " + origin.figure);
+        System.out.println("T-FIG: " + origin.topFigure);
+
+        // remove from old field
+        if(origin.figure == figure){
+            origin.figure = null;
+            System.out.println("found figure");
+        }
+        else if(origin.topFigure == figure){
+            origin.topFigure = null;
+            System.out.println("found topFigure");
+        }
+
+        System.out.println("FIG: " + origin.figure);
+        System.out.println(figure.field);
+        System.out.println("T-FIG: " + origin.topFigure);
 
         // update figure
         figure.field = target;

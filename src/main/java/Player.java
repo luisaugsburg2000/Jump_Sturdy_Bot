@@ -65,7 +65,8 @@ public class Player extends Thread{
                 GameManager.printBoard(0);
 
                 // calculate and execute move
-                Move move = calculateMoves();
+                int maxThinkTime = 2000;
+                Move move = calculateMoves(maxThinkTime);
                 System.out.println("confirm move: " + move);
                 Scanner in = new Scanner(System.in);
                 String line = in.nextLine();
@@ -114,20 +115,33 @@ public class Player extends Thread{
         }
     }
 
-    Move calculateMoves(){
-        ArrayList<Figure> figures = getFigures();
+    Move calculateMoves(int maxThinkTime){
+//        ArrayList<Figure> figures = getFigures();
+//
+//        // select random figure
+//        Random random = new Random();
+//        Figure randomFigure = figures.get(random.nextInt(figures.size()));
+//        randomFigure.calculatePossibleMoves();
+//
+//        if(randomFigure.possibleMoves.isEmpty())
+//            Debug.noMoves(gameState.FEN, randomFigure);
+//        int randomMoveIndex = random.nextInt(randomFigure.possibleMoves.size());
+//        Move randomMove = randomFigure.possibleMoves.get(randomMoveIndex);
+//
+//        return randomMove;
 
-        // select random figure
-        Random random = new Random();
-        Figure randomFigure = figures.get(random.nextInt(figures.size()));
-        randomFigure.calculatePossibleMoves();
+        AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2brbb2/2bb5/3r0b03/2r02b01r0/1b02r0rr1b0/1rr2r03/6", 'r');
+        alphaBeta.start();
 
-        if(randomFigure.possibleMoves.isEmpty())
-            Debug.noMoves(gameState.FEN, randomFigure);
-        int randomMoveIndex = random.nextInt(randomFigure.possibleMoves.size());
-        Move randomMove = randomFigure.possibleMoves.get(randomMoveIndex);
+        try {
+            Thread.sleep(maxThinkTime);
+            alphaBeta.stopExecution();
+            alphaBeta.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
-        return randomMove;
+        return alphaBeta.results.get(alphaBeta.results.size() - 1).topMove;
     }
 
     String executeMove(Move move){
@@ -135,12 +149,12 @@ public class Player extends Thread{
         return network.send("\"" + moveString + "\"");
     }
 
-    ArrayList<Figure> getFigures(){
-        ArrayList<Figure> result = new ArrayList<>();
-        for(Figure figure : GameManager.figures) {
-            if (figure.side == side & figure.canMove())
-                result.add(figure);
-        }
-        return result;
-    }
+//    ArrayList<Figure> getFigures(){
+//        ArrayList<Figure> result = new ArrayList<>();
+//        for(Figure figure : GameManager.figures) {
+//            if (figure.side == side & figure.canMove())
+//                result.add(figure);
+//        }
+//        return result;
+//    }
 }
