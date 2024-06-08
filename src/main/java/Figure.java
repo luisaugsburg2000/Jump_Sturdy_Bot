@@ -56,14 +56,34 @@ public class Figure {
     private void checkCoordinates(Coordinate coordinate, Move.MoveType moveType, int value){
         if(coordinate.isValid()){
             Field newField = GameManager.getField(coordinate);
-            if(newField.topFigure != null){
-                if(newField.topFigure.side != side)
-                    value += 10;
+
+            // move sorting
+            if(true){
+                if(newField.topFigure != null){
+                    if(newField.topFigure.side != side)
+                        value += 100; // kill + on top
+                }
+                else if(newField.figure != null){
+                    if(newField.figure.side != side)
+                        value += 100; // kill
+                    else
+                        value += 0; // on top
+                }
             }
-            else if(newField.figure != null){
-                if(newField.figure.side != side)
-                    value += 10;
-            }
+//            else{
+//                if(newField.topFigure != null){
+//                    if(newField.topFigure.side != side)
+//                        value += 110; // kill + on top
+//                }
+//                else if(newField.figure != null){
+//                    if(newField.figure.side != side)
+//                        value += 100; // kill
+//                    else
+//                        value += 10; // on top
+//                }
+//            }
+
+
             Move move = new Move(this, field, newField, moveType, value);
             if(move.isAllowed())
                 possibleMoves.add(move);

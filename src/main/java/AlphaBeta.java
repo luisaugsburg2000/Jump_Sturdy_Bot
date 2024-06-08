@@ -29,7 +29,7 @@ public class AlphaBeta extends Thread{
             alpha_beta(originState, 0, d, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
             Instant end = Instant.now();
             Duration duration = Duration.between(start, end);
-            System.out.println("Depth " + d + ": " + duration.toMillis() + " millis, T: " + transpositionsUsed + ", Best Move: " + originState.topMove);
+            System.out.println("Depth " + d + ": " + duration.toMillis() + " millis, T: " + transpositionsUsed + ", TTS: " + Transposition.table.size() + ", Best Move: " + originState.topMove);
             if(!stopped)
                 results.add(originState);
             d++;
@@ -56,9 +56,12 @@ public class AlphaBeta extends Thread{
         }
 
         int v;
+        boolean containsAbortedSubstates = false;
         if(depth == maxDepth | gameState.gameFinished | stopped){
             if(print)
                 System.out.println();
+            if(stopped)
+                gameState.transpositionInfo.aborted = true;
             return gameState.evaluate();
         }
 
@@ -101,12 +104,13 @@ public class AlphaBeta extends Thread{
                     gameState.nextGameState = subGameState;
                     v = evaluation;
                 }
+                if(subGameState.transpositionInfo.aborted)
+                    containsAbortedSubstates = true;
                 move.revert();
                 if(v >= beta)
                     break;
             }
-            //gameState.transpositionInfo.depthEvaluation = isMax ? v : -v;
-            if(enableTranspositions){
+            if(enableTranspositions & !containsAbortedSubstates){
                 gameState.transpositionInfo.depthEvaluation = v;
                 GameState existingState = Transposition.table.get(gameState.FEN);
                 if(existingState != null){
@@ -139,14 +143,13 @@ public class AlphaBeta extends Thread{
                     gameState.nextGameState = subGameState;
                     v = evaluation;
                 }
-
+                if(subGameState.transpositionInfo.aborted)
+                    containsAbortedSubstates = true;
                 move.revert();
                 if(v <= alpha)
                     break;
             }
-
-
-            if(enableTranspositions){
+            if(enableTranspositions & !containsAbortedSubstates){
                 gameState.transpositionInfo.depthEvaluation = v;
                 GameState existingState = Transposition.table.get(gameState.FEN);
                 if(existingState != null){

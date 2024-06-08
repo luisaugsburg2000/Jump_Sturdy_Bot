@@ -21,6 +21,7 @@ public class GameState {
         int viewDepth;
         int depthEvaluation;
         int moveIndex;
+        boolean aborted = false;
     }
 
     public GameState(char player, boolean isMax, int viewDepth, int moveIndex) {
@@ -109,7 +110,7 @@ public class GameState {
             possibleMoves.addAll(figure.possibleMoves);
         }
         // TODO: Zugsortierung
-        // Collections.shuffle(possibleMoves);
+        Collections.shuffle(possibleMoves);
         possibleMoves.sort((m1, m2) -> Integer.compare(m2.value, m1.value));
 
         // game finished due to figure on last row
