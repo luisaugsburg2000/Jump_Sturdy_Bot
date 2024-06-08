@@ -6,15 +6,17 @@ public class Move {
     Field target;
     MoveType moveType;
     enum MoveType { Walk, Beat, Jump }
+    int value;
 
     boolean executed;
     Figure destroyedFigure;
 
-    public Move(Figure figure, Field origin, Field target, MoveType moveType){
+    public Move(Figure figure, Field origin, Field target, MoveType moveType, int value){
         this.figure = figure;
         this.origin = origin;
         this.target = target;
         this.moveType = moveType;
+        this.value = value;
     }
 
     public boolean isAllowed(){

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class GameState {
     String FEN;
@@ -107,7 +108,9 @@ public class GameState {
             figure.calculatePossibleMoves();
             possibleMoves.addAll(figure.possibleMoves);
         }
-        Collections.shuffle(possibleMoves);
+        // TODO: Zugsortierung
+        // Collections.shuffle(possibleMoves);
+        possibleMoves.sort((m1, m2) -> Integer.compare(m2.value, m1.value));
 
         // game finished due to figure on last row
         if(Math.abs(gameEndEvaluation) >= 50)

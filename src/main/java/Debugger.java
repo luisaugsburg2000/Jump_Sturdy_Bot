@@ -17,9 +17,9 @@ public class Debugger {
         Instant start = Instant.now();
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2b0bb2/2bb1b03/3rr4/2r02b01r0/1b02r0rr2/1rr2r02b0/6", 'b');
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2b0bb2/2bb1b03/3rr4/2r02b01r0/1b02r0rr1b0/1rr2r03/6", 'b');
-        //AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2brbb2/2bb5/3r0b03/2r02b01r0/1b02r0rr1b0/1rr2r03/6", 'r');
+        AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2brbb2/2bb5/3r0b03/2r02b01r0/1b02r0rr1b0/1rr2r03/6", 'r');
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/1b02brbb2/2b0b04/3r0bb1r01/2r01r0b01r0/1b03r01b0/1rr2r03/6", 'r');
-        AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/5b02/4r03/8/8/6", 'b');
+        //AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/5b02/4r03/8/8/6", 'b');
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/8/2r05/5r02/8/8/8/6", 'r');
         //AlphaBeta alphaBeta = new AlphaBeta("4b01/8/2r05/8/8/8/8/6", 'b');
         //AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/8/8/8/8/6", 'r');
@@ -28,9 +28,9 @@ public class Debugger {
         alphaBeta.start();
 
         try {
-//            Thread.sleep(3000);
-//            System.out.println("time is up");
-//            alphaBeta.stopExecution();
+            Thread.sleep(3000);
+            System.out.println("time is up");
+            alphaBeta.stopExecution();
             alphaBeta.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

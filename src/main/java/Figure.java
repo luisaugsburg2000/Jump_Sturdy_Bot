@@ -53,14 +53,20 @@ public class Figure {
         }
     }
 
-    private void checkCoordinates(Coordinate coordinate, Move.MoveType moveType){
+    private void checkCoordinates(Coordinate coordinate, Move.MoveType moveType, int value){
         if(coordinate.isValid()){
             Field newField = GameManager.getField(coordinate);
-            Move move = new Move(this, field, newField, moveType);
+            if(newField.topFigure != null){
+                if(newField.topFigure.side != side)
+                    value += 10;
+            }
+            else if(newField.figure != null){
+                if(newField.figure.side != side)
+                    value += 10;
+            }
+            Move move = new Move(this, field, newField, moveType, value);
             if(move.isAllowed())
                 possibleMoves.add(move);
-
-            //String move_ = Coord
         }
     }
 
@@ -70,7 +76,7 @@ public class Figure {
             newCoordinate.y += 1;
         if(side == 'r')
             newCoordinate.y -= 1;
-        checkCoordinates(newCoordinate, Move.MoveType.Walk);
+        checkCoordinates(newCoordinate, Move.MoveType.Walk, 1);
     }
     private void walkLeft(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -78,7 +84,7 @@ public class Figure {
             newCoordinate.x -= 1;
         if(side == 'r')
             newCoordinate.x += 1;
-        checkCoordinates(newCoordinate, Move.MoveType.Walk);
+        checkCoordinates(newCoordinate, Move.MoveType.Walk, 0);
     }
     private void walkRight(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -86,7 +92,7 @@ public class Figure {
             newCoordinate.x += 1;
         if(side == 'r')
             newCoordinate.x -= 1;
-        checkCoordinates(newCoordinate, Move.MoveType.Walk);
+        checkCoordinates(newCoordinate, Move.MoveType.Walk, 0);
     }
     private void beatLeftFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -98,7 +104,7 @@ public class Figure {
             newCoordinate.x += 1;
             newCoordinate.y -= 1;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Beat);
+        checkCoordinates(newCoordinate, Move.MoveType.Beat, 1);
     }
     private void beatRightFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -110,7 +116,7 @@ public class Figure {
             newCoordinate.x -= 1;
             newCoordinate.y -= 1;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Beat);
+        checkCoordinates(newCoordinate, Move.MoveType.Beat, 1);
     }
     private void jumpLeft(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -122,7 +128,7 @@ public class Figure {
             newCoordinate.x += 2;
             newCoordinate.y -= 1;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Jump);
+        checkCoordinates(newCoordinate, Move.MoveType.Jump, 1);
     }
     private void jumpLeftFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -134,7 +140,7 @@ public class Figure {
             newCoordinate.x += 1;
             newCoordinate.y -= 2;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Jump);
+        checkCoordinates(newCoordinate, Move.MoveType.Jump, 2);
     }
     private void jumpRight(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -146,7 +152,7 @@ public class Figure {
             newCoordinate.x -= 2;
             newCoordinate.y -= 1;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Jump);
+        checkCoordinates(newCoordinate, Move.MoveType.Jump, 1);
     }
     private void jumpRightFwd(){
         Coordinate newCoordinate = new Coordinate(field.coordinate.x, field.coordinate.y);
@@ -158,6 +164,6 @@ public class Figure {
             newCoordinate.x -= 1;
             newCoordinate.y -= 2;
         }
-        checkCoordinates(newCoordinate, Move.MoveType.Jump);
+        checkCoordinates(newCoordinate, Move.MoveType.Jump, 2);
     }
 }
