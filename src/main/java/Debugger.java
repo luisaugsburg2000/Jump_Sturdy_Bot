@@ -21,7 +21,8 @@ public class Debugger {
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/1b02brbb2/2b0b04/3r0bb1r01/2r01r0b01r0/1b03r01b0/1rr2r03/6", 'r');
         AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/5b02/4r03/8/8/6", 'b');
         //AlphaBeta alphaBeta = new AlphaBeta("1b04/8/2r05/5r02/8/8/8/6", 'r');
-        //AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/8/8/8/8/6", 'b');
+        //AlphaBeta alphaBeta = new AlphaBeta("4b01/8/2r05/8/8/8/8/6", 'b');
+        //AlphaBeta alphaBeta = new AlphaBeta("3b02/8/2r05/8/8/8/8/6", 'r');
         //AlphaBeta alphaBeta = new AlphaBeta("3b02/8/8/8/4r03/8/8/6", 'b');
         //AlphaBeta alphaBeta = new AlphaBeta("b0b0b0b0b0b0/1b0b0b0b0b0b01/8/8/8/8/1r0r0r0r0r0r0/r0r0r0r0r0r0", 'b');
         alphaBeta.start();
@@ -52,6 +53,7 @@ public class Debugger {
         System.out.println("Time Elapsed: " + duration.toMillis() + " milliseconds");
 
         System.out.println("Transpositions: " + Transposition.table.size());
+        System.out.println("Transposition search time: " + Testing.transpositionSearchTime);
     }
 
     static void printMoves(GameState gameState){
@@ -62,6 +64,7 @@ public class Debugger {
             System.out.println("FEN: " + gameState.FEN);
             System.out.println("Player: " + gameState.player);
             System.out.println("Evaluation: " + gameState.evaluation);
+            System.out.println("Perspective: " + gameState.transpositionInfo.perspective);
             System.out.println("View Depth: " + gameState.transpositionInfo.viewDepth);
             System.out.println("Depth Evaluation: " + gameState.transpositionInfo.depthEvaluation);
             if(gameState.topMove != null)

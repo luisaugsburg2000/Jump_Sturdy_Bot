@@ -16,16 +16,34 @@ public class GameState {
 
     TranspositionInfo transpositionInfo;
     public class TranspositionInfo {
+        char perspective;
         int viewDepth;
         int depthEvaluation;
+        int moveIndex;
     }
 
-    public GameState(char player, boolean isMax, int viewDepth) {
+    public GameState(char player, boolean isMax, int viewDepth, int moveIndex) {
         this.FEN = GameManager.generateFEN();
         this.player = player;
         this.isMax = isMax;
+
         this.transpositionInfo = new TranspositionInfo();
+        if(player == 'b'){
+            if(isMax)
+                this.transpositionInfo.perspective = 'b';
+            else
+                this.transpositionInfo.perspective = 'r';
+        }
+        if(player == 'r'){
+            if(isMax)
+                this.transpositionInfo.perspective = 'r';
+            else
+                this.transpositionInfo.perspective = 'b';
+        }
+
         this.transpositionInfo.viewDepth = viewDepth;
+        this.transpositionInfo.moveIndex = moveIndex;
+
         evaluation = initialize();
 //        if(Transposition.table.containsKey(this.FEN))
 //            System.out.println("TRANS");
