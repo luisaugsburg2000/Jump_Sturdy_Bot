@@ -83,7 +83,6 @@ public class Figure {
 //                }
 //            }
 
-
             Move move = new Move(this, field, newField, moveType, value);
             if(move.isAllowed())
                 possibleMoves.add(move);
