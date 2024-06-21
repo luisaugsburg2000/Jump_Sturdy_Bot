@@ -61,11 +61,11 @@ public class Figure {
             if(true){
                 if(newField.topFigure != null){
                     if(newField.topFigure.side != side)
-                        value += 100; // kill + on top
+                        value += 10; // kill + on top
                 }
                 else if(newField.figure != null){
                     if(newField.figure.side != side)
-                        value += 100; // kill
+                        value += 10; // kill
                     else
                         value += 0; // on top
                 }

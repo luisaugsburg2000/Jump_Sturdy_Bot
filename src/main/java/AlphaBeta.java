@@ -30,8 +30,22 @@ public class AlphaBeta extends Thread{
             Instant end = Instant.now();
             Duration duration = Duration.between(start, end);
             System.out.println("Depth " + d + ": " + duration.toMillis() + " millis, T: " + transpositionsUsed + ", TTS: " + Transposition.table.size() + ", Best Move: " + originState.topMove);
-            if(!stopped)
+            if(!stopped){
                 results.add(originState);
+                Testing.LayerInfo layerInfoIndex = Testing.layerInfoMap.get(d);
+                if(layerInfoIndex != null){
+                    layerInfoIndex.qty++;
+                    layerInfoIndex.duration += duration.toMillis();
+                    layerInfoIndex.transpositionsUsed += transpositionsUsed;
+                }
+                else{
+                    Testing.LayerInfo layerInfo = new Testing.LayerInfo(d, 1, duration.toMillis(), transpositionsUsed);
+                    Testing.layerInfoMap.put(d, layerInfo);
+                }
+            }
+
+            if(d >= 25)
+                stopped = true;
             d++;
         }
     }

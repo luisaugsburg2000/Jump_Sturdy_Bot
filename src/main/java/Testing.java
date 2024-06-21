@@ -1,9 +1,25 @@
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 
 public class Testing {
     static int zustaende;
     static float transpositionSearchTime = 0;
+    static HashMap<Integer, LayerInfo> layerInfoMap = new HashMap();
+
+    static class LayerInfo{
+        int depth;
+        int qty;
+        long duration;
+        int transpositionsUsed;
+
+        LayerInfo(int depth, int qty, long duration, int transpositionsUsed){
+            this.depth = depth;
+            this.qty = qty;
+            this.duration = duration;
+            this.transpositionsUsed = transpositionsUsed;
+        }
+    }
 
     public static void main(String[] args) {
 //        GameManager.generateBoard("6/1b02br3/6bb1/2b0b04/2r04r0/8/1rr1r0rr1r01/6 b");
@@ -38,5 +54,20 @@ public class Testing {
         System.out.println();
         GameState g = alphaBeta.results.get(alphaBeta.results.size() - 1);
         Debugger.printMoves(g);
+    }
+
+    static void printPerformance(){
+        for (Testing.LayerInfo value : Testing.layerInfoMap.values()) {
+            double duration = round3(value.duration / (double)value.qty);
+            double transpositionsUsed = round3((double)value.transpositionsUsed / (double)value.qty);
+            System.out.println("Depth: " + value.depth + ", Reached: " + value.qty + ", Duration: " + duration + ", TranspositionsUsed: " + transpositionsUsed);
+        }
+    }
+
+    static double round3(double value) {
+        long factor = (long) Math.pow(10, 3);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }

@@ -2,9 +2,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Player extends Thread{
     Network network;
@@ -14,7 +12,11 @@ public class Player extends Thread{
     boolean gameStarted;
     boolean waitingForOtherPlayer;
 
+    int moveIndex = 1;
+
     public Player(char side){
+        new GUI();
+
         network = new Network();
         if(network.p.charAt(0) == '0')
             this.side = 'r';
@@ -42,10 +44,10 @@ public class Player extends Thread{
 
                 if(!bothConnected){
                     if(gameStarted){
-                        System.out.println("game won :)");
+                        System.out.println("game finished");
                         break;
                     }
-                    sleep(); continue;
+                    continue;
                 }
                 else
                     gameStarted = true;
@@ -53,7 +55,6 @@ public class Player extends Thread{
                     if(!waitingForOtherPlayer)
                         System.out.println("waiting for other player...");
                     waitingForOtherPlayer = true;
-                    sleep();
                     continue;
                 }
 
@@ -65,23 +66,25 @@ public class Player extends Thread{
                 GameManager.printBoard(0);
 
                 // calculate and execute move
-                int maxThinkTime = 2000;
+                int maxThinkTime = 3000;
                 Move move = calculateMoves(maxThinkTime);
-                System.out.println("confirm move: " + move);
-                Scanner in = new Scanner(System.in);
-                String line = in.nextLine();
-                switch(line){
-                    case "FEN":
-                        System.out.println(FEN);
-                        break;
-                    case "MOVES":
-                        System.out.println("possible moves:");
-                        move.figure.printPossibleMoves();
-                        break;
-                }
+
+                // confirm move
+//                System.out.println("confirm move: " + move);
+//                Scanner in = new Scanner(System.in);
+//                String line = in.nextLine();
+
+//                switch(line){
+//                    case "FEN":
+//                        System.out.println(FEN);
+//                        break;
+//                    case "MOVES":
+//                        System.out.println("possible moves:");
+//                        move.figure.printPossibleMoves();
+//                        break;
+//                }
+
                 String moveResult = executeMove(move);
-//                System.out.println("confirmed:");
-//                System.out.println(moveResult);
 
                 // check if move was valid
                 JsonNode jsonNode_confirm = objectMapper.readTree(moveResult);
@@ -97,64 +100,61 @@ public class Player extends Thread{
                 }
 //                if(currentSide_confirm == this.side)
 //                    System.out.println("invalid move");
-                if(move.figure.isOnTop())
-                    System.out.println("JUMP");
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
 
-            sleep();
-        }
-    }
-
-    void sleep(){
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
     Move calculateMoves(int maxThinkTime){
-//        ArrayList<Figure> figures = getFigures();
-//
-//        // select random figure
-//        Random random = new Random();
-//        Figure randomFigure = figures.get(random.nextInt(figures.size()));
-//        randomFigure.calculatePossibleMoves();
-//
-//        if(randomFigure.possibleMoves.isEmpty())
-//            Debug.noMoves(gameState.FEN, randomFigure);
-//        int randomMoveIndex = random.nextInt(randomFigure.possibleMoves.size());
-//        Move randomMove = randomFigure.possibleMoves.get(randomMoveIndex);
-//
-//        return randomMove;
+        //return dummy();
+        return alpha_beta(maxThinkTime);
+    }
 
-        AlphaBeta alphaBeta = new AlphaBeta("1b04/1bb2brbb2/2bb5/3r0b03/2r02b01r0/1b02r0rr1b0/1rr2r03/6", 'r');
+    Move dummy(){
+        GameState currentGameState = new GameState(side, true, 0, 0);
+
+        Random random = new Random();
+        Move randomMove = currentGameState.possibleMoves.get(random.nextInt(currentGameState.possibleMoves.size()));
+        System.out.println(randomMove);
+        //randomMove.execute();
+        return randomMove;
+    }
+
+    Move alpha_beta(int maxThinkTime){
+        String currentFEN = GameManager.generateFEN();
+        AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side);
+        alphaBeta.moveIndex = moveIndex;
         alphaBeta.start();
-
         try {
             Thread.sleep(maxThinkTime);
+            System.out.println("time is up");
             alphaBeta.stopExecution();
             alphaBeta.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        GameManager.generateBoard(currentFEN);
+        Move topMove = alphaBeta.results.get(alphaBeta.results.size() - 1).topMove;
+        System.out.println(topMove + " @depth " + alphaBeta.results.size());
+        //topMove.execute();
 
-        return alphaBeta.results.get(alphaBeta.results.size() - 1).topMove;
+        int prevSize = Transposition.table.size();
+        System.out.println("Transposition table size: " + prevSize);
+        Transposition.table.entrySet().removeIf(entry -> ((moveIndex - entry.getValue().transpositionInfo.moveIndex)) >= 3);
+        Iterator<Map.Entry<String, GameState>> iterator = Transposition.table.entrySet().iterator();
+
+        System.out.println("Transpositions deleted: " + (prevSize - Transposition.table.size()));
+        moveIndex++;
+
+        if(topMove != null)
+            return topMove;
+        return dummy();
     }
 
     String executeMove(Move move){
         String moveString = move.toString();
         return network.send("\"" + moveString + "\"");
     }
-
-//    ArrayList<Figure> getFigures(){
-//        ArrayList<Figure> result = new ArrayList<>();
-//        for(Figure figure : GameManager.figures) {
-//            if (figure.side == side & figure.canMove())
-//                result.add(figure);
-//        }
-//        return result;
-//    }
 }

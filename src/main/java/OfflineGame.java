@@ -40,5 +40,6 @@ public class OfflineGame {
 
             x++;
         }
+        Testing.printPerformance();
     }
 }
