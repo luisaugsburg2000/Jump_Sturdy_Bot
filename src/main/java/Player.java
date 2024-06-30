@@ -13,6 +13,7 @@ public class Player extends Thread{
     boolean waitingForOtherPlayer;
 
     int moveIndex = 1;
+    EvaluationValues evaluationValues;
 
     public Player(char side){
         new GUI();
@@ -22,6 +23,8 @@ public class Player extends Thread{
             this.side = 'r';
         else
             this.side = 'b';
+
+        evaluationValues = new EvaluationValues(side);
     }
 
     public static void main(String[] args){
@@ -113,7 +116,7 @@ public class Player extends Thread{
     }
 
     Move dummy(){
-        GameState currentGameState = new GameState(side, true, 0, 0);
+        GameState currentGameState = new GameState(side, true, 0, 0, evaluationValues);
 
         Random random = new Random();
         Move randomMove = currentGameState.possibleMoves.get(random.nextInt(currentGameState.possibleMoves.size()));
@@ -124,7 +127,7 @@ public class Player extends Thread{
 
     Move alpha_beta(int maxThinkTime){
         String currentFEN = GameManager.generateFEN();
-        AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side);
+        AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side, evaluationValues);
         alphaBeta.moveIndex = moveIndex;
         alphaBeta.start();
         try {

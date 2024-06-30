@@ -7,6 +7,9 @@ public class Figure {
     Field field;
     ArrayList<Move> possibleMoves = new ArrayList<>();
 
+    boolean canAttack;
+    boolean isProtected;
+
     public Figure(char side, Field field) {
         this.side = side;
         this.field = field;
@@ -69,6 +72,11 @@ public class Figure {
                     else
                         value += 0; // on top
                 }
+
+                if(side == 'r')
+                    value += 8 - field.coordinate.y;
+                if(side == 'b')
+                    value += field.coordinate.y + 1;
             }
 //            else{
 //                if(newField.topFigure != null){

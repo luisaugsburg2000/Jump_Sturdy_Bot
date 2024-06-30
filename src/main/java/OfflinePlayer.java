@@ -3,9 +3,11 @@ import java.util.*;
 public class OfflinePlayer {
     char side;
     int moveIndex = 1;
+    EvaluationValues evaluationValues;
 
     public OfflinePlayer(char side) {
         this.side = side;
+        evaluationValues = new EvaluationValues(side);
     }
 
     void executeMove(){
@@ -14,7 +16,7 @@ public class OfflinePlayer {
     }
 
     void dummy(){
-        GameState currentGameState = new GameState(side, true, 0, 0);
+        GameState currentGameState = new GameState(side, true, 0, 0, evaluationValues);
 
         Random random = new Random();
         Move randomMove = currentGameState.possibleMoves.get(random.nextInt(currentGameState.possibleMoves.size()));
@@ -23,12 +25,15 @@ public class OfflinePlayer {
     }
 
     void alpha_beta(){
+        // calculate max think time
+
+
         String currentFEN = GameManager.generateFEN();
-        AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side);
+        AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side, evaluationValues);
         alphaBeta.moveIndex = moveIndex;
         alphaBeta.start();
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
             System.out.println("time is up");
             alphaBeta.stopExecution();
             alphaBeta.join();

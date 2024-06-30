@@ -29,22 +29,39 @@ public class Move {
         }
         else if(moveType == MoveType.Beat){
             if(target.topFigure != null){
-                if(target.topFigure.side != figure.side)
+                if(target.topFigure.side != figure.side){
+                    figure.canAttack = true;
                     return true;
+                }
+                else
+                    target.topFigure.isProtected = true;
             }
             else if(target.figure != null){
-                if(target.figure.side != figure.side)
+                if(target.figure.side != figure.side){
+                    figure.canAttack = true;
                     return true;
+                }
+                else
+                    target.figure.isProtected = true;
             }
             return false;
         }
         else if(moveType == MoveType.Jump){
             if(target.figure == null)
                 return true;
-            if(target.topFigure == null)
+            if(target.topFigure == null){
+                if(target.figure.side != figure.side)
+                    figure.canAttack = true;
+                else
+                    target.figure.isProtected = true;
                 return true;
-            if(target.topFigure.side != figure.side)
+            }
+            if(target.topFigure.side != figure.side){
+                figure.canAttack = true;
                 return true;
+            }
+            else
+                target.topFigure.isProtected = true;
             return false;
         }
         return false;
@@ -86,8 +103,14 @@ public class Move {
                 destroyedFigure = target.topFigure;
                 target.topFigure = figure;
             }
-            else if(target.figure != null)
-                target.topFigure = figure;
+            else if(target.figure != null){
+                if(target.figure.side != figure.side){
+                    destroyedFigure = target.figure;
+                    target.figure = figure;
+                }
+                else
+                    target.topFigure = figure;
+            }
             else
                 target.figure = figure;
         }

@@ -13,9 +13,17 @@ public class AlphaBeta extends Thread{
 
     int transpositionsUsed;
 
+    EvaluationValues evaluationValues;
+
+    public AlphaBeta(String FEN, char player, EvaluationValues evaluationValues) {
+        startFEN = FEN;
+        startPlayer = player;
+        this.evaluationValues = evaluationValues;
+    }
     public AlphaBeta(String FEN, char player) {
         startFEN = FEN;
         startPlayer = player;
+        this.evaluationValues = new EvaluationValues(player);
     }
 
     @Override
@@ -25,7 +33,7 @@ public class AlphaBeta extends Thread{
             Instant start = Instant.now();
             transpositionsUsed = 0;
             GameManager.generateBoard(startFEN);
-            GameState originState = new GameState(startPlayer, true, d, moveIndex);
+            GameState originState = new GameState(startPlayer, true, d, moveIndex, evaluationValues);
             alpha_beta(originState, 0, d, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
             Instant end = Instant.now();
             Duration duration = Duration.between(start, end);
@@ -58,7 +66,7 @@ public class AlphaBeta extends Thread{
         Instant start = null;
         Instant end = null;
 
-        boolean enableTranspositions = true;
+        boolean enableTranspositions = false;
         boolean print = false;
         if(print){
             GameManager.print(gameState.FEN, depth);
@@ -111,7 +119,7 @@ public class AlphaBeta extends Thread{
                 if(print)
                     GameManager.print("D" + (depth + 1) + "/" + move + " (" + gameState.player + ")", depth + 1);
                 move.execute();
-                GameState subGameState = new GameState(otherPlayer(gameState.player), false, maxDepth - (depth + 1), moveIndex);
+                GameState subGameState = new GameState(otherPlayer(gameState.player), false, maxDepth - (depth + 1), moveIndex, evaluationValues);
                 int evaluation = alpha_beta(subGameState, depth + 1, maxDepth, v, beta, false);
                 if(evaluation > v | gameState.topMove == null){
                     gameState.topMove = move;
@@ -150,7 +158,7 @@ public class AlphaBeta extends Thread{
                 if(print)
                     GameManager.print("D" + (depth + 1) + "/" + move + " (" + gameState.player + ")", depth + 1);
                 move.execute();
-                GameState subGameState = new GameState(otherPlayer(gameState.player), true, maxDepth - (depth + 1), moveIndex);
+                GameState subGameState = new GameState(otherPlayer(gameState.player), true, maxDepth - (depth + 1), moveIndex, evaluationValues);
                 int evaluation = alpha_beta(subGameState, depth + 1, maxDepth, alpha, v, true);
                 if(evaluation < v | gameState.topMove == null){
                     gameState.topMove = move;
