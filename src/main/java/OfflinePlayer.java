@@ -1,12 +1,16 @@
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class OfflinePlayer {
     char side;
     int moveIndex = 1;
+    int remainingTimeMillis;
     EvaluationValues evaluationValues;
 
-    public OfflinePlayer(char side) {
+    public OfflinePlayer(char side, int totalTimeMillis) {
         this.side = side;
+        this.remainingTimeMillis = totalTimeMillis;
         evaluationValues = new EvaluationValues(side);
     }
 
@@ -25,15 +29,18 @@ public class OfflinePlayer {
     }
 
     void alpha_beta(){
+        Instant start = Instant.now();
         // calculate max think time
-
+        int maxThinkTime = TimeManager.calculateTime(remainingTimeMillis);
+        System.out.println("remaining time: " + remainingTimeMillis);
+        System.out.println("max think time: " + maxThinkTime);
 
         String currentFEN = GameManager.generateFEN();
         AlphaBeta alphaBeta = new AlphaBeta(currentFEN, side, evaluationValues);
         alphaBeta.moveIndex = moveIndex;
         alphaBeta.start();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(maxThinkTime);
             System.out.println("time is up");
             alphaBeta.stopExecution();
             alphaBeta.join();
@@ -50,14 +57,12 @@ public class OfflinePlayer {
         System.out.println("Transposition table size: " + prevSize);
         Transposition.table.entrySet().removeIf(entry -> ((moveIndex - entry.getValue().transpositionInfo.moveIndex)) >= 3);
         Iterator<Map.Entry<String, GameState>> iterator = Transposition.table.entrySet().iterator();
-//        while (iterator.hasNext()) {
-//            Map.Entry<String, GameState> entry = iterator.next();
-//            if (((moveIndex - entry.getValue().transpositionInfo.moveIndex)) >= 2) {
-//                iterator.remove();
-//            }
-//        }
 
         System.out.println("Transpositions deleted: " + (prevSize - Transposition.table.size()));
         moveIndex++;
+
+        Instant end = Instant.now();
+        Duration duration = Duration.between(start, end);
+        remainingTimeMillis -= duration.toMillis();
     }
 }

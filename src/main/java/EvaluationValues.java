@@ -103,7 +103,17 @@ public class EvaluationValues {
         return rand.nextInt((range * 2) + 1) - range;
     }
 
-    void print(String side){
+    void printCurrent(String side){
+        System.out.println(side);
+        System.out.println("winPoints: " + winPoints_c);
+        System.out.println("figurePoints: " + figurePoints_c);
+        System.out.println("dfhrPoints: " + dfhrPoints_c);
+        System.out.println("dflrePoints: " + dflrePoints_c);
+        System.out.println("moveCountPoints: " + moveCountPoints_c);
+        System.out.println("attackingPoints: " + attackingPoints_c);
+        System.out.println("protectedPoints: " + protectedPoints_c);
+    }
+    void printConfirmed(String side){
         System.out.println(side);
         System.out.println("winPoints: " + winPoints);
         System.out.println("figurePoints: " + figurePoints);

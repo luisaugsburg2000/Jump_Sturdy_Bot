@@ -10,8 +10,11 @@ public class TimeManager {
 
     static int calculateTime(int remainingTime, int figureCount){
         float maxFraction = ((float)remainingTime) / 25f; // maximum relative fraction of remaining time to be used
-        //return (int)(evaluateGraph(countFigures()) * maxFraction);
         return Math.round(evaluateGraph(figureCount) * maxFraction);
+    }
+    static int calculateTime(int remainingTime){
+        float maxFraction = ((float)remainingTime) / 25f; // maximum relative fraction of remaining time to be used
+        return (int)(evaluateGraph(countFigures()) * maxFraction);
     }
 
     static int countFigures(){

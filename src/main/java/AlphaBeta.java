@@ -79,10 +79,10 @@ public class AlphaBeta extends Thread{
 
         int v;
         boolean containsAbortedSubstates = false;
-        if(depth == maxDepth | gameState.gameFinished | stopped){
+        if(depth == maxDepth | gameState.gameFinished | (stopped && maxDepth != 1)){ // only stop if search depth is greater than 1
             if(print)
                 System.out.println();
-            if(stopped)
+            if(stopped && maxDepth != 1)
                 gameState.transpositionInfo.aborted = true;
             return gameState.evaluate();
         }
