@@ -1,1 +1,1 @@
-# Dummy_KI
+Jump Sturdy Bot für TU Berlin KI Projekt
