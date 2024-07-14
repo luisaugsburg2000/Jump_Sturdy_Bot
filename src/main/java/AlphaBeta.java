@@ -66,7 +66,7 @@ public class AlphaBeta extends Thread{
         Instant start = null;
         Instant end = null;
 
-        boolean enableTranspositions = false;
+        boolean enableTranspositions = true;
         boolean print = false;
         if(print){
             GameManager.print(gameState.FEN, depth);

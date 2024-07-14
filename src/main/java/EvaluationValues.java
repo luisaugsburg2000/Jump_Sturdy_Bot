@@ -6,13 +6,13 @@ import java.util.Random;
 public class EvaluationValues {
     char side;
 
-    int winPoints = 1000000;
-    int figurePoints = 100;
-    int dfhrPoints = 10;        // distance from home row
-    int dflrePoints = 5;        // distance from left / right edge
-    int moveCountPoints = 10;
-    int attackingPoints = 50;   // if figure could beat opponent figure
-    int protectedPoints = 50;   // if figure is protected by other figure
+    int winPoints = 1000000;    // 1000000
+    int figurePoints = 100;     // 100
+    int dfhrPoints = 10;        // 10       distance from home row
+    int dflrePoints = 5;        // 5        distance from left / right edge
+    int moveCountPoints = 10;   // 10
+    int attackingPoints = 50;   // 50       if figure could beat opponent figure
+    int protectedPoints = 50;   // 50       if figure is protected by other figure
 
     int winPoints_c;
     int figurePoints_c;
@@ -44,7 +44,14 @@ public class EvaluationValues {
         this.side = side;
     }
 
-    // apply
+    void initialize(int figurePoints, int dfhrPoints, int dflrePoints, int moveCountPoints, int attackingPoints, int protectedPoints){
+        this.figurePoints = figurePoints;
+        this.dfhrPoints = dfhrPoints;
+        this.dflrePoints = dflrePoints;
+        this.moveCountPoints = moveCountPoints;
+        this.attackingPoints = attackingPoints;
+        this.protectedPoints = protectedPoints;
+    }
     void apply(){
         winPoints = winPoints_c;
         figurePoints = figurePoints_c;
@@ -54,7 +61,6 @@ public class EvaluationValues {
         attackingPoints = attackingPoints_c;
         protectedPoints = protectedPoints_c;
     }
-    // revert
     void revert(){
         winPoints_c = winPoints;
         figurePoints_c = figurePoints;
@@ -64,7 +70,6 @@ public class EvaluationValues {
         attackingPoints_c = attackingPoints;
         protectedPoints_c = protectedPoints;
     }
-    // nextGen
     static void nextGen_(){
         generations.add(generations.size() + 1);
     }
@@ -77,6 +82,12 @@ public class EvaluationValues {
         attackingPoints_c = attackingPoints + random(10);
         protectedPoints_c = protectedPoints + random(10);
 
+        if(figurePoints_c < 0) figurePoints_c = 0;
+        if(dfhrPoints_c < 0) dfhrPoints_c = 0;
+        if(dflrePoints_c < 0) dflrePoints_c = 0;
+        if(moveCountPoints_c < 0) moveCountPoints_c = 0;
+        if(attackingPoints_c < 0) attackingPoints_c = 0;
+        if(protectedPoints_c < 0) protectedPoints_c = 0;
 
         if(side == 'b'){
             winPoints_arr_b.add(winPoints_c);

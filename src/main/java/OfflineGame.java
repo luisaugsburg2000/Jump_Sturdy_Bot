@@ -8,7 +8,10 @@ public class OfflineGame {
     static OfflinePlayer looser;
 
     public static void main(String[] args) {
-        for(int i = 0; i < 10; i++){
+        //blue.evaluationValues.initialize(91, 0, 0, 20, 53, 68);
+        //red.evaluationValues.initialize(102, 7, 5, 11, 51, 51);
+
+        for(int i = 0; i < 50; i++){
             GameManager.generateBoard("b0b0b0b0b0b0/1b0b0b0b0b0b01/8/8/8/8/1r0r0r0r0r0r0/r0r0r0r0r0r0");
             //GameManager.generateBoard("3b02/8/8/8/4r03/8/8/6");
 
